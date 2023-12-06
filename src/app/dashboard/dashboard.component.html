@@ -1,2 +1,41 @@
-<!--TODO: melhorar o layout dos cards para exibir ao menos 2 por linha em telas > md, e pequenas (sm) 1 -->
-<app-card [card]="card" *ngFor="let card of cards"></app-card>
+<div fxLayout="row wrap" fxLayoutAlign="center center" class="container-cards">
+	<ng-template #loadedTmp>
+		<div
+			*ngFor="let card of cards$ | async"
+			fxFlex.md="50%"
+			fxFlex.gt-md="33%"
+			fxFlex.lt-md="100%"
+			fxLayoutAlign.md="center"
+			fxLayoutAlign.gt-md="center"
+			fxLayoutAlign.lt-md="center"
+			[ngStyle]="{ 'padding.px': 15 }"
+			[ngStyle.lt-md]="{ 'padding.px': 18 }"
+		>
+			<app-card [card]="card"></app-card>
+		</div>
+	</ng-template>
+
+	<ng-template #errorTmp>
+		<div class="container-loading-or-fail">
+			<span class="text-error">
+				Ocorreu um erro ao tentar carregas as skills
+			</span>
+			<button mat-flat-button color="primary" (click)="loadCards()">
+				Tentar novamente!
+			</button>
+		</div>
+	</ng-template>
+
+	<ng-template #loadedOrErrorTmp>
+		<ng-container
+			*ngIf="occursSomeError; then errorTmp; else loadedTmp"
+		></ng-container>
+	</ng-template>
+
+	<ng-container *ngIf="isLoading; else loadedOrErrorTmp">
+		<div class="container-loading-or-fail">
+			<mat-spinner [diameter]="60" color="#fff"></mat-spinner>
+			<span class="text-error">Carregando...</span>
+		</div>
+	</ng-container>
+</div>
